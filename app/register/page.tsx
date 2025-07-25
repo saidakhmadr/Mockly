@@ -19,8 +19,30 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement registration
-    setTimeout(() => setIsLoading(false), 1000);
+
+    const form = e.target as HTMLFormElement;
+    const name = (form.fullName as HTMLInputElement).value;
+    const email = (form.email as HTMLInputElement).value;
+    const password = (form.password as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      if (res.ok) {
+        alert('Registration successful! You can now log in.');
+        // Optionally redirect to login page
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      alert('Network error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -225,6 +247,25 @@ export default function RegisterPage() {
           </Tabs>
 
           <Separator className="my-6" />
+
+          <div className="space-y-2 mt-4">
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3000/google'}
+            >
+              <img src="/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+              Continue with Google
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3000/github'}
+            >
+              <img src="/github.svg" alt="GitHub" className="h-5 w-5 mr-2" />
+              Continue with GitHub
+            </Button>
+          </div>
 
           <div className="text-center">
             <p className="text-sm text-muted-foreground">

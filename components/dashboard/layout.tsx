@@ -17,17 +17,29 @@ import {
   X,
   FileText,
   Trophy,
-  HelpCircle
+  HelpCircle,
+  Plus
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  user: {
+    name?: string;
+    email: string;
+    avatarUrl?: string;
+  };
+  onLogout?: () => void;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout({ children, user, onLogout }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
+  if (!user) {
+    return null;
+  }
+
+  // Restore original navigation fields
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Interviews', href: '/dashboard/interviews', icon: Calendar },
@@ -40,71 +52,54 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
-        <div className="flex items-center justify-between h-18 px-6">
-          <Link href="/" className="flex items-center">
-            <Logo className="h-12 w-12" width={48} height={48} />
+      <aside className={`fixed inset-y-0 left-0 z-50 w-48 bg-[#FEFEFE] border-r border-[#E5E7EB] shadow-none flex flex-col transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        <div className="flex items-center h-16 px-6 border-b border-[#F5F5F4]">
+          <Link href="/" className="flex items-center gap-2">
+            <Logo className="h-7 w-7" width={28} height={28} />
+            <span className="font-bold text-[18px] text-[#222] tracking-tight">Mockly</span>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden"
-          >
-            <X className="h-5 w-5" />
+        </div>
+        <nav className="flex-1 overflow-y-auto px-2 py-4">
+          <ul className="space-y-1">
+            {navigation.map((item) => (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-[8px] text-[16px] font-medium transition-colors ${isActive(item.href)
+                    ? 'bg-[#F5F5F4] text-[#222] font-semibold'
+                    : 'text-[#44403C] hover:bg-[#F5F5F4]'} focus:outline-none`}
+                >
+                  <item.icon className="h-5 w-5 opacity-80" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="px-6 py-4 border-t border-[#F5F5F4] flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            {user.avatarUrl ? (
+              <AvatarImage src={user.avatarUrl} />
+            ) : (
+              <AvatarFallback>{(user.name || user.email || '?')[0].toUpperCase()}</AvatarFallback>
+            )}
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-[15px] font-medium truncate text-[#44403C]">{user.name || user.email}</p>
+            <p className="text-xs text-[#A3A3A3] truncate">{user.email}</p>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onLogout} className="text-[#A3A3A3] hover:text-[#9A3412]">
+            <LogOut className="h-5 w-5" />
           </Button>
         </div>
-
-        <nav className="mt-8 px-4">
-          <div className="space-y-2">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  isActive(item.href)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </Link>
-            ))}
-          </div>
-        </nav>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-          <div className="flex items-center space-x-3 mb-4">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1" />
-              <AvatarFallback>SC</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Sarah Chen</p>
-              <p className="text-xs text-muted-foreground truncate">sarah@example.com</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="flex-1 justify-start">
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Help
-            </Button>
-            <Button variant="ghost" size="sm">
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className="lg:ml-48">
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-6 bg-background">
+        <div className="flex items-center justify-between h-16 px-10 bg-[#FAFAFA] border-b border-[#F5F5F4]">
           <Button
             variant="ghost"
             size="sm"
@@ -117,17 +112,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <ThemeToggle />
           </div>
         </div>
-
-        {/* Content */}
-        <main className="min-h-[calc(100vh-4rem)]">
+        <main className="min-h-[calc(100vh-4rem)] bg-[#FAFAFA]">
           {children}
         </main>
       </div>
-
       {/* Sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

@@ -127,14 +127,17 @@ export function Hero() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16 scroll-animate stagger-3">
             <Link href="/register?type=candidate">
-              <Button size="lg" className="text-lg px-8 py-6 btn-primary gradient-bg hover:shadow-xl hover:shadow-primary/25 hover:scale-105 transition-all duration-300 group">
-                <Zap className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                Start Free
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </Button>
+              <div className="relative inline-block">
+                <span className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 opacity-60 blur-lg animate-pulse pointer-events-none" aria-hidden="true"></span>
+                <Button size="lg" className="relative z-10 text-lg px-10 py-6 btn-primary gradient-bg shadow-2xl rounded-3xl font-extrabold border-0 hover:scale-110 hover:brightness-110 hover:shadow-[0_8px_40px_0_rgba(168,85,247,0.25)] focus-visible:ring-4 focus-visible:ring-fuchsia-400/40 transition-all duration-300 group">
+                  <Zap className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                  Start Free
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </div>
             </Link>
             <Link href="/register?type=company">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 glass hover:bg-muted/50 hover:scale-105 transition-all duration-300 group !border-gray-300 dark:!border-gray-600">
+              <Button size="lg" variant="outline" className="relative z-10 text-lg px-10 py-6 glass rounded-3xl hover:bg-muted/50 hover:scale-105 hover:shadow-lg transition-all duration-300 group !border-gray-300 dark:!border-gray-600 font-semibold">
                 <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 For Companies
               </Button>

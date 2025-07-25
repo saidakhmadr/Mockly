@@ -17,8 +17,31 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement authentication
-    setTimeout(() => setIsLoading(false), 1000);
+
+    const form = e.target as HTMLFormElement;
+    const email = (form.email as HTMLInputElement).value;
+    const password = (form.password as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        alert('Login successful!');
+        // Optionally redirect to dashboard
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Login failed');
+      }
+    } catch (err) {
+      alert('Network error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,6 +118,25 @@ export default function LoginPage() {
           </form>
 
           <Separator className="my-6" />
+
+          <div className="space-y-2 mt-4">
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3000/google'}
+            >
+              <img src="/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+              Continue with Google
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center"
+              onClick={() => window.location.href = 'http://localhost:3000/github'}
+            >
+              <img src="/github.svg" alt="GitHub" className="h-5 w-5 mr-2" />
+              Continue with GitHub
+            </Button>
+          </div>
 
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
